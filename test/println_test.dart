@@ -3,6 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   test("first", () {
+    println.sep = " ";
     // normal
     println(1, 2, 3, name: "entao", score: 9); // 1, 2, 3, name:entao, score:9
     // with separator

@@ -1,8 +1,10 @@
 import 'package:println/println.dart';
 
 void main() {
+  kDebugPrintln = true;
   // normal
-  println(1, 2, 3, name: "entao", score: 9); // 1, 2, 3, name:entao, score:9
+  String s = println(1, 2, 3, name: "entao", score: 9); // 1, 2, 3, name:entao, score:9
+  print("s is: $s");
   // with separator
   println(1, 2, 3, name: "entao", score: 9, $sep: "| "); // 1| 2| 3, name:entao, score:9
 

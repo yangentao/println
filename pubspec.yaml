@@ -1,6 +1,6 @@
 name: println
 description: Dart println function, with variant argument.
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/yangentao/println
 homepage: https://github.com/yangentao/println
 
@@ -8,7 +8,7 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
-  any_call: ^1.0.0
+  #  any_call: ^1.0.0
 
 dev_dependencies:
   lints: ^6.0.0

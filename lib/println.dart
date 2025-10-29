@@ -1,27 +1,32 @@
 library;
 
-import 'package:any_call/any_call.dart';
+bool kReleasePrintln = false;
 
-dynamic println = AnyCall<void>(
-  callback: (ls, map) {
-    String sep = map["\$sep"] ?? ", ";
-    String? level = map["\$level"];
-    StringSink? buf = map["\$sink"];
-    if (buf != null) {
-      String line = _buildLine(ls, map, sep: sep);
-      buf.writeln(line);
-      return;
-    }
-    if (!_isDebugMode) return;
+bool kDebugPrintln = true;
+
+dynamic println = PrintlnCall<String>(callback: _doPrint);
+
+String _doPrint(List<dynamic> ls, Map<String, dynamic> map) {
+  String sep = map["\$sep"] ?? " ";
+  String? level = map["\$level"];
+  StringSink? buf = map["\$sink"];
+  if (buf != null) {
     String line = _buildLine(ls, map, sep: sep);
-    if (level == "e" || level == "error") {
-      line = "\u001b[31m$line\u001b[0m";
-    } else if (level == "w" || level == "warn" || level == "warning") {
-      line = "\u001b[33m$line\u001b[0m";
-    }
-    print(line);
-  },
-);
+    buf.writeln(line);
+    return line;
+  }
+  if (_isReleaseMode && !kReleasePrintln) return "";
+  if (_isDebugMode && !kDebugPrintln) return "";
+
+  String line = _buildLine(ls, map, sep: sep);
+  if (level == "e" || level == "error") {
+    line = "\u001b[31m$line\u001b[0m";
+  } else if (level == "w" || level == "warn" || level == "warning") {
+    line = "\u001b[33m$line\u001b[0m";
+  }
+  print(line);
+  return line;
+}
 
 String _buildLine(List<dynamic> ls, Map<String, dynamic> map, {required String sep}) {
   String a = ls.map((e) => e.toString()).join(sep);
@@ -31,4 +36,39 @@ String _buildLine(List<dynamic> ls, Map<String, dynamic> map, {required String s
   return "$a, $b";
 }
 
-const bool _isDebugMode = !bool.fromEnvironment('dart.vm.product') && !bool.fromEnvironment('dart.vm.profile');
+const bool _isReleaseMode = bool.fromEnvironment('dart.vm.product') || bool.fromEnvironment('dart.vm.profile');
+const bool _isDebugMode = !_isReleaseMode;
+
+class PrintlnCall<R> {
+  final R Function(List<dynamic> argList, Map<String, dynamic> argMap) callback;
+  final void Function(List<dynamic> argList, Map<String, dynamic> argMap)? before;
+  final void Function(R result)? after;
+
+  PrintlnCall({required this.callback, this.before, this.after});
+
+  R call() {
+    return invoke([], {});
+  }
+
+  //Symbol("x") => x
+  String _symbolText(Symbol sym) {
+    String s = sym.toString();
+    return s.substring(8, s.length - 2);
+  }
+
+  @override
+  R noSuchMethod(Invocation invocation) {
+    List<dynamic> argList = invocation.positionalArguments.toList();
+    Map<String, dynamic> argMap = invocation.namedArguments.map((sym, v) {
+      return MapEntry(_symbolText(sym), v);
+    });
+    return invoke(argList, argMap);
+  }
+
+  R invoke(List<dynamic> argList, Map<String, dynamic> argMap) {
+    before?.call(argList, argMap);
+    R r = callback(argList, argMap);
+    after?.call(r);
+    return r;
+  }
+}
