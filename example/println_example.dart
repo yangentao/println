@@ -1,7 +1,6 @@
 import 'package:println/println.dart';
 
 void main() {
-  kDebugPrintln = true;
   // normal
   String s = println(1, 2, 3, name: "entao", score: 9); // 1, 2, 3, name:entao, score:9
   print("s is: $s");

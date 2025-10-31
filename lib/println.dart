@@ -1,13 +1,18 @@
 library;
 
-bool kReleasePrintln = false;
-
-bool kDebugPrintln = true;
+class PrintlnConfig {
+  static bool releasePrintln = false;
+  static bool debugPrintln = true;
+  static String separator = " ";
+  static String keyValueSeparator = ":";
+  static String mapEntrySeparator = ", ";
+  static String listMapSeparator = ", ";
+}
 
 dynamic println = PrintlnCall<String>(callback: _doPrint);
 
 String _doPrint(List<dynamic> ls, Map<String, dynamic> map) {
-  String sep = map["\$sep"] ?? " ";
+  String sep = map["\$sep"] ?? PrintlnConfig.separator;
   String? level = map["\$level"];
   StringSink? buf = map["\$sink"];
   if (buf != null) {
@@ -15,8 +20,8 @@ String _doPrint(List<dynamic> ls, Map<String, dynamic> map) {
     buf.writeln(line);
     return line;
   }
-  if (_isReleaseMode && !kReleasePrintln) return "";
-  if (_isDebugMode && !kDebugPrintln) return "";
+  if (_isReleaseMode && !PrintlnConfig.releasePrintln) return "";
+  if (_isDebugMode && !PrintlnConfig.debugPrintln) return "";
 
   String line = _buildLine(ls, map, sep: sep);
   if (level == "e" || level == "error") {
@@ -30,10 +35,10 @@ String _doPrint(List<dynamic> ls, Map<String, dynamic> map) {
 
 String _buildLine(List<dynamic> ls, Map<String, dynamic> map, {required String sep}) {
   String a = ls.map((e) => e.toString()).join(sep);
-  String b = map.entries.where((e) => !e.key.startsWith("\$")).map((e) => "${e.key}:${e.value}").join(", ");
+  String b = map.entries.where((e) => !e.key.startsWith("\$")).map((e) => "${e.key}${PrintlnConfig.keyValueSeparator}${e.value}").join(PrintlnConfig.mapEntrySeparator);
   if (a.isEmpty) return b;
   if (b.isEmpty) return a;
-  return "$a, $b";
+  return "$a${PrintlnConfig.listMapSeparator}$b";
 }
 
 const bool _isReleaseMode = bool.fromEnvironment('dart.vm.product') || bool.fromEnvironment('dart.vm.profile');
