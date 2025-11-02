@@ -9,3 +9,5 @@
 
 ## 1.0.3
 * println config
+## 1.0.4
+* escape code

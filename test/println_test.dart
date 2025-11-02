@@ -1,5 +1,4 @@
 import 'package:println/println.dart';
-import 'package:println/src/ascii_escape.dart';
 import 'package:test/test.dart';
 
 void main() {

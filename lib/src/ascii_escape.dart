@@ -1,4 +1,4 @@
-library;
+part of '../println.dart';
 
 // https://en.wikipedia.org/wiki/ANSI_escape_code
 
