@@ -15,11 +15,11 @@ const bool _isReleaseMode = bool.fromEnvironment('dart.vm.product') || bool.from
 const bool _isDebugMode = !_isReleaseMode;
 
 class PrintlnCall {
-  // PrintlnConfig config;
+  PrintlnConfig config;
   final void Function(List<dynamic> argList, Map<String, dynamic> argMap)? before;
   final void Function(String result)? after;
 
-  PrintlnCall({this.before, this.after});
+  PrintlnCall({this.before, this.after, PrintlnConfig? config}) : config = config ?? PrintlnConfig();
 
   String _doPrint(List<dynamic> ls, Map<String, dynamic> map) {
     String sep = map["\$sep"] ?? PrintlnConfig.separator;
