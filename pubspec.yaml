@@ -5,7 +5,8 @@ repository: https://github.com/yangentao/println
 homepage: https://github.com/yangentao/println
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.6.0
+resolution: workspace
 
 dependencies:
   #  any_call: ^1.0.0
